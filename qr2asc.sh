@@ -15,7 +15,6 @@
 #
 # This script depends on the following libraries/applications:
 #
-#   libqrencode (http://fukuchi.org/works/qrencode/)
 #   zbar (http://zbar.sourceforge.net)
 #
 # If you need to backup or restore binary keys, see this link to get started:
@@ -26,6 +25,12 @@
 
 # Name of the output key after decoding
 output_key_name="mykey.asc"
+
+# Dependency check
+if ! err=$(type zbarimg); then
+    echo "${err}"
+    exit 1
+fi
 
 # Argument/usage check
 if [ $# -lt 1 ]; then

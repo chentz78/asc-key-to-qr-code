@@ -33,6 +33,12 @@ max_qr_bytes=2800
 # Prefix string for the PNG images that are produced
 image_prefix="QR"
 
+# Dependency check
+if ! err=$(type qrencode); then
+    echo "${err}"
+    exit 1
+fi
+
 # Argument/usage check
 if [ $# -ne 1 ]; then
     echo "usage: $(basename "${0}") <ascii armor key file>"
