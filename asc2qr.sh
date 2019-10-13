@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #####
 #
@@ -35,36 +35,30 @@ image_prefix="QR"
 
 # Argument/usage check
 if [ $# -ne 1 ]; then
-	echo "usage: `basename ${0}` <ascii armor key file>"
-	exit 1
+    echo "usage: $(basename "${0}") <ascii armor key file>"
+    exit 1
 fi
 
 asc_key=${1}
 if [ ! -f "${asc_key}" ]; then
-	echo "key file not found: '${asc_key}'"
-	exit 1
+    echo "key file not found: '${asc_key}'"
+    exit 1
 fi
 
 ## Split the key file into usable chunks that the QR encoder can consume
-chunks=()
+## For each chunk, encode it into a qr image
+index=1
 while true; do
-    s=$( dd bs=${max_qr_bytes} count=1 2>/dev/null )
+    s=$(dd bs=${max_qr_bytes} count=1 2>/dev/null)
     if [ ${#s} -gt 0 ]; then
-        chunks+=("${s}")
+        img="${image_prefix}${index}.png"
+        echo "generating ${img}"
+        if ! echo -n "${s}" | qrencode -o ${img}; then
+            echo "failed to encode image"
+            exit 2
+        fi
+        index=$((index + 1))
     else
         break
     fi
-done < ${asc_key}
-
-## For each chunk, encode it into a qr image
-index=1
-for c in "${chunks[@]}"; do
-    img="${image_prefix}${index}.png"
-    echo "generating ${img}"
-    echo -n "${c}" | qrencode -o ${img}
-	if [ $? -ne 0 ]; then
-		echo "failed to encode image"
-		exit 2
-	fi
-	index=$((index+1))
-done
+done <"${asc_key}"

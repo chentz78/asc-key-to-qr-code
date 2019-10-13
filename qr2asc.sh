@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #####
 #
@@ -29,33 +29,24 @@ output_key_name="mykey.asc"
 
 # Argument/usage check
 if [ $# -lt 1 ]; then
-	echo "usage: `basename ${0}` <QR image 1> [QR image 2] [...]"
-	exit 1
+    echo "usage: $(basename "${0}") <QR image 1> [QR image 2] [...]"
+    exit 1
 fi
 
 # For each image on the command line, decode it into text
-chunks=()
-index=1
-for img in "$@"; do
-	if [ ! -f "${img}" ]; then
-		echo "image file not found: '${img}'"
-		exit 1
-	fi
-	asc_key="${tmp_file}.${index}"
-	echo "decoding ${img}"
-    chunk=$( zbarimg --raw --set disable --set qrcode.enable "${img}" 2>/dev/null )
-	if [ $? -ne 0 ]; then
-		echo "failed to decode QR image"
-		exit 2
-	fi
-    chunks+=("${chunk}")
-	index=$((index+1))
-done
-
 asc_key=""
-for c in "${chunks[@]}"; do
-    asc_key+="${c}"
+for img in "$@"; do
+    if [ ! -f "${img}" ]; then
+        echo "image file not found: '${img}'"
+        exit 1
+    fi
+    echo "decoding ${img}"
+    if ! chunk=$(zbarimg --raw --set disable --set qrcode.enable "${img}" 2>/dev/null); then
+        echo "failed to decode QR image"
+        exit 2
+    fi
+    asc_key="${asc_key}${chunk}"
 done
 
 echo "creating ${output_key_name}"
-echo "${asc_key}" > ${output_key_name}
+echo "${asc_key}" >${output_key_name}
