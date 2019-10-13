@@ -64,7 +64,7 @@ while true; do
     if [ ${#s} -gt 0 ]; then
         img="${image_prefix}${index}.png"
         echo "generating ${img}"
-        if ! echo -n "${s}" | qrencode \
+        if ! printf "%s" "${s}" | qrencode \
             --level=${qr_error_correction} \
             --symversion=${qr_version} \
             --output=${img}; then
