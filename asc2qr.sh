@@ -26,9 +26,14 @@
 #
 #####
 
-# Maximum chuck size to send to the QR encoder. QR version 40 supports
-# 2,953 bytes of storage.
-max_qr_bytes=2800
+# Maximum chuck size to send to the QR encoder.
+max_qr_bytes=2300
+
+# QR Version 1-40
+qr_version=40
+
+# QR error correction level [LMQH]
+qr_error_correction=M
 
 # Prefix string for the PNG images that are produced
 image_prefix="QR"
@@ -59,7 +64,10 @@ while true; do
     if [ ${#s} -gt 0 ]; then
         img="${image_prefix}${index}.png"
         echo "generating ${img}"
-        if ! echo -n "${s}" | qrencode -o ${img}; then
+        if ! echo -n "${s}" | qrencode \
+            --level=${qr_error_correction} \
+            --symversion=${qr_version} \
+            --output=${img}; then
             echo "failed to encode image"
             exit 2
         fi
