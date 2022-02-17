@@ -15,6 +15,7 @@ by these scripts.
 
 1. [libqrencode](http://fukuchi.org/works/qrencode/)
 2. [zbar](http://zbar.sourceforge.net)
+3. [ImageMagcik](https://imagemagick.org). Only if you use additional information on the image.
 
 ## Export keys From GPG
 
